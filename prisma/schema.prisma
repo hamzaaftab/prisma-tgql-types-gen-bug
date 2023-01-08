@@ -1,0 +1,36 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator PrismaTypeGraphQLTypesGenerator {
+  provider     = "npx prisma-typegraphql-types-generator"
+  modelsOutput = "./src/models" // Optional defaults to "./src/generated/models"
+  enumsOutput  = "./src/types/enums" // Optional defaults to "./src/generated/enums"
+  useYarn      = true // Optional if you want `graphql-scalars` installation to be done via yarn defaults to "npm"
+  exportedNameSuffix = "GQL" // Optional if you want to add a suffix to the end of your exported class names and enums
+  exportedNamePrefix = "TYPE" // Optional if you want to prefix your exported class names and enums
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String?
+  posts Post[]
+}
+
+model Post {
+  id        Int     @id @default(autoincrement())
+  title     String
+  content   String?
+  published Boolean @default(false)
+  author    User    @relation(fields: [authorId], references: [id])
+  authorId  Int
+}
